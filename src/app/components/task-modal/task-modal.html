@@ -1,0 +1,54 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{ isEditMode() ? 'Edit Task' : 'Add New Task' }}</h4>
+  
+  <button type="button" class="btn-close" aria-label="Close" (click)="dismissModal()"></button>
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="taskForm">
+    
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Task Name *</label>
+      <input type="text" formControlName="taskName" class="form-control" placeholder="Enter task name">
+      
+      @if (taskForm.get('taskName')?.invalid && taskForm.get('taskName')?.touched) {
+        <small class="text-danger">Task name is required.</small>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Description</label>
+      <textarea formControlName="content" class="form-control" rows="3" placeholder="Enter task details..."></textarea>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-semibold">Due Date</label>
+        <input type="datetime-local" formControlName="dueDate" class="form-control">
+      </div>
+      
+      @if (!isEditMode()) {
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-semibold">Status *</label>
+          <select formControlName="statusTypeId" class="form-select">
+            
+            @for (status of statusTypes(); track status.statusTypeId) {
+              <option [value]="status.statusTypeId">
+                {{ status.statusName }}
+              </option>
+            }
+          </select>
+        </div>
+      }
+    </div>
+
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="dismissModal()">Cancel</button>
+  
+  <button type="button" class="btn btn-dark" (click)="save()">
+    {{ isEditMode() ? 'Update Task' : 'Save Task' }}
+  </button>
+</div>
