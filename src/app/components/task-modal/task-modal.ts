@@ -62,6 +62,15 @@ export class TaskModal implements OnInit {
       this.taskForm.markAllAsTouched();
       return;
     }
+
+    //REVIEW
+    //  modalRef.result.then((formData) => {
+    //   if (formData) {
+    //     this.taskService.createTask(formData).subscribe(() => {
+    //       this.loadTasks(); 
+    //     });
+    //   }//TODO: muta in task-modal.ts
+    // }).catch(() => {/*user dismissed the modal without saving*/});
     
     this.activeModal.close(this.taskForm.value);
   }

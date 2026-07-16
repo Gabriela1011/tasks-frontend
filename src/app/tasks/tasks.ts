@@ -66,7 +66,7 @@ export class Tasks implements OnInit {
         this.taskService.createTask(formData).subscribe(() => {
           this.loadTasks(); 
         });
-      }
+      }//TODO: muta in task-modal.ts
     }).catch(() => {/*user dismissed the modal without saving*/});
   }
 
