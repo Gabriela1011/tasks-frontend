@@ -1,19 +1,28 @@
-<p>tasks works!</p>
-<table class="table table-striped table-hover">
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <p class="fw-bold fs-4 mb-0">Tasks:</p>
+  <button class="btn btn-dark">Add task</button>
+</div>
+
+<table class="table table-striped table-hover align-middle">
   <thead>
     <tr>
       <th>Due Date</th>
       <th>Subject</th>
       <th>Status</th>
+      <th>Actions</th>
     </tr>
   </thead>
 
   <tbody>
     @for (task of tasks(); track task.taskId) {
       <tr>
-        <td>{{ task.dueDate }}</td>
+        <td>{{ task.dueDate | date:'dd-MM-yyyy' }}</td>
         <td>{{ task.taskName }}</td>
         <td>{{ task.statusName }}</td>
+        <td>
+          <button class="btn btn-outline-danger btn-sm me-2">Delete</button>
+          <button class="btn btn-outline-secondary btn-sm">Edit</button>
+        </td>
       </tr>
     }
   </tbody>
