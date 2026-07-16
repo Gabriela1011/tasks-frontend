@@ -7,6 +7,6 @@ export const routes: Routes = [
     {path: 'home', component: Homepage},
     {path: 'search', component: Search},
     {path: 'myTasks', component: Tasks},
-    // {path: '', redirectTo: '/home', pathMatch: 'full'},
+    {path: '', redirectTo: '/home', pathMatch: 'full'},
     // {path: '**', component: NotFoundComponent}
 ];
