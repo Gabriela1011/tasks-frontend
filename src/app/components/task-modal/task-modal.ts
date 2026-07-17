@@ -1,8 +1,17 @@
-import { Component, inject, input, OnInit } from '@angular/core';
+import { Component, inject, InjectionToken, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Task } from '../../model/task.model';
 import { StatusType } from '../../model/status-type.model';
+
+export interface TaskModalData {
+  isEditMode: boolean;
+  taskData?: Task;
+  statusTypes: StatusType[];
+}
+
+
+export const TASK_MODAL_DATA = new InjectionToken<TaskModalData>('TASK_MODAL_DATA');
 
 @Component({
   selector: 'app-task-modal',
@@ -13,11 +22,12 @@ import { StatusType } from '../../model/status-type.model';
 export class TaskModal implements OnInit {
   activeModal = inject(NgbActiveModal);
   private fb = inject(FormBuilder);
+  private data = inject(TASK_MODAL_DATA);
 
-  isEditMode = input<boolean>(false);
-  taskData = input<Task>();
-  statusTypes = input<StatusType[]>([]);
-  
+  isEditMode = signal(this.data.isEditMode);
+  taskData = signal(this.data.taskData);
+  statusTypes = signal(this.data.statusTypes);
+
   taskForm!: FormGroup;
 
   ngOnInit(): void {
@@ -62,15 +72,6 @@ export class TaskModal implements OnInit {
       this.taskForm.markAllAsTouched();
       return;
     }
-
-    //REVIEW
-    //  modalRef.result.then((formData) => {
-    //   if (formData) {
-    //     this.taskService.createTask(formData).subscribe(() => {
-    //       this.loadTasks(); 
-    //     });
-    //   }//TODO: muta in task-modal.ts
-    // }).catch(() => {/*user dismissed the modal without saving*/});
     
     this.activeModal.close(this.taskForm.value);
   }
@@ -78,6 +79,7 @@ export class TaskModal implements OnInit {
   dismissModal() {
     this.activeModal.dismiss();
   }
+  
   getStatusName(statusTypeId: number | string): string {
     const status = this.statusTypes().find(s => s.statusTypeId === statusTypeId);
     return status ? status.statusName : 'Unknown';

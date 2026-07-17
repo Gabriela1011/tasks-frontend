@@ -16,5 +16,9 @@ export class TaskService {
   createTask(taskPayload: CreateTaskDTO) {
     return this.http.post<Task>(this.apiUrl, taskPayload);
   }
+
+  deleteTask(taskId: number) {
+    return this.http.delete<void>(`${this.apiUrl}/${taskId}`);
+  }
 }
 

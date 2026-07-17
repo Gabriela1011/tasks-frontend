@@ -20,7 +20,7 @@
         <td>{{ task.taskName }}</td>
         <td>{{ task.statusName }}</td>
         <td>
-          <button class="btn btn-outline-danger btn-sm me-2">Delete</button>
+          <button class="btn btn-outline-danger btn-sm me-2" (click)="deleteTask(task)">Delete</button>
           <button class="btn btn-outline-secondary btn-sm">Edit</button>
         </td>
       </tr>

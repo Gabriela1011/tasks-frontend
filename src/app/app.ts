@@ -3,10 +3,11 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
 import { Header } from "./header/header";
+import { Toasts } from "./components/toasts/toasts";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Header],
+  imports: [RouterOutlet, Header, Toasts],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

@@ -1,1 +1,15 @@
-/* You can add global styles to this file, and also import other style files */
+
+/* Toast overrides (ng-bootstrap): dark background with a colored glow. */
+.app-toast {
+  background-color: #1a1a1a;
+  color: #fff;
+  border: none;
+}
+
+.app-toast-success {
+  box-shadow: 0 0 16px rgba(40, 199, 111, 0.75);
+}
+
+.app-toast-danger {
+  box-shadow: 0 0 16px rgba(220, 53, 69, 0.75);
+}
