@@ -15,4 +15,8 @@ export class AuthService {
   register(registerPayload: RegisterUserDTO) {
     return this.http.post<UserDetailsDTO>('http://localhost:8080/users', registerPayload);
   }
+
+  logout() {
+    localStorage.removeItem('loggedUser');
+  }
 }
