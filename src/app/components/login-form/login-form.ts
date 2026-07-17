@@ -30,7 +30,6 @@ export class LoginForm {
     }
 
     const loginData = this.loginForm.value;
-    console.log('Login payload:', loginData);
 
     this.authService.login(loginData).subscribe({
       next: (response) => {

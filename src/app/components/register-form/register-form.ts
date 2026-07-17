@@ -32,7 +32,6 @@ export class RegisterForm {
     }
 
     const registerData = this.registerForm.value;
-    console.log('Register payload:', registerData);
 
     this.authService.register(registerData).subscribe({
       next: (response) => {
