@@ -1,13 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { UserDetailsDTO } from '../model/user-details-dto.model';
-import { LoginCredentialsDTO } from '../model/login-credentials.model';
-import { RegisterUserDTO } from '../model/register-user-dto.model';
+import { LoginCredentialsDTO, RegisterUserDTO, UserDetailsDTO } from '../model/user.model';
 
 @Injectable({
   providedIn: 'root',
 })
-export class Auth {
+export class AuthService {
   private http = inject(HttpClient);
 
   login(authPayload: LoginCredentialsDTO) {

@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Task } from '../model/task.model';
-import { CreateTaskDTO } from '../model/task-dto.model';
+import { Task, CreateTaskDTO } from '../model/task.model';
 
 @Injectable({
   providedIn: 'root',

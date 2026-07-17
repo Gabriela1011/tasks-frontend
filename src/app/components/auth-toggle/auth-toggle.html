@@ -1,0 +1,24 @@
+<ul class="nav nav-pills nav-justified mb-4 p-1 bg-light rounded" role="tablist" style="border: 1px solid #dee2e6;">
+  <li class="nav-item">
+    <button 
+      class="nav-link fw-bold" 
+      [class.active]="isLoginMode()"
+      [class.bg-dark]="isLoginMode()"
+      [class.text-white]="isLoginMode()"
+      [class.text-muted]="!isLoginMode()"
+      (click)="isLoginMode.set(true)">
+      Login
+    </button>
+  </li>
+  <li class="nav-item">
+    <button 
+      class="nav-link fw-bold" 
+      [class.active]="!isLoginMode()"
+      [class.bg-dark]="!isLoginMode()"
+      [class.text-white]="!isLoginMode()"
+      [class.text-muted]="isLoginMode()"
+      (click)="isLoginMode.set(false)">
+      Register
+    </button>
+  </li>
+</ul>
