@@ -31,58 +31,58 @@ export class TaskModal implements OnInit {
   taskForm!: FormGroup;
 
   ngOnInit(): void {
-    this.taskForm = this.fb.group({
-      taskName: ['', [Validators.required, Validators.maxLength(500)]],
-      content: ['', Validators.maxLength(4000)],
-      dueDate: [''],
-      statusTypeId: ['', Validators.required]
-    });
-    
-    //add task mode
-    if(!this.isEditMode()) {
-      const currentStatuses = this.statusTypes();
-      const pendingStatus = currentStatuses.find(status => status.statusName.toUpperCase() === 'PENDING');
+    this.taskForm = this.buildForm();
 
-      if(pendingStatus) {
-        this.taskForm.patchValue({ statusTypeId: pendingStatus.statusTypeId });
-      } else if (currentStatuses.length > 0) {
-        this.taskForm.patchValue({ statusTypeId: currentStatuses[0].statusTypeId });
-      }
-    }
-
-    //edit task mode
-    if(this.isEditMode() && this.taskData()) {
-      const task = this.taskData()!;
-
-      let formattedDate = '';
-      if (task.dueDate) {
-        formattedDate = task.dueDate.substring(0, 16); 
-      }
-      
-      this.taskForm.patchValue({
-        taskName: task.taskName,
-        content: task.content || '',
-        dueDate: formattedDate
-      });
+    if (this.isEditMode()) {
+      this.patchFormFromTask();
+    } else {
+      this.preselectDefaultStatus();
     }
   }
 
-  save() {
+  save(): void {
     if (this.taskForm.invalid) {
       this.taskForm.markAllAsTouched();
       return;
     }
-    
+
     this.activeModal.close(this.taskForm.value);
   }
 
-  dismissModal() {
+  dismissModal(): void {
     this.activeModal.dismiss();
   }
-  
-  getStatusName(statusTypeId: number | string): string {
-    const status = this.statusTypes().find(s => s.statusTypeId === statusTypeId);
-    return status ? status.statusName : 'Unknown';
+
+  private buildForm(): FormGroup {
+    // Status is chosen only when creating a task
+    // changing it afterwards goes through a separate endpoint, so it isn't required when editing
+    return this.fb.group({
+      taskName: ['', [Validators.required, Validators.maxLength(500)]],
+      content: ['', Validators.maxLength(4000)],
+      dueDate: [''],
+      statusTypeId: ['', this.isEditMode() ? [] : [Validators.required]],
+    });
   }
-  
+
+  private patchFormFromTask(): void {
+    const task = this.taskData();
+    if (!task) {
+      return;
+    }
+
+    this.taskForm.patchValue({
+      taskName: task.taskName,
+      content: task.content ?? '',
+      dueDate: task.dueDate ? task.dueDate.substring(0, 16) : '',
+    });
+  }
+
+  private preselectDefaultStatus(): void {
+    const statuses = this.statusTypes();
+    const defaultStatus = statuses.find((status) => status.statusName.toUpperCase() === 'PENDING') ?? statuses[0];
+
+    if (defaultStatus) {
+      this.taskForm.patchValue({ statusTypeId: defaultStatus.statusTypeId });
+    }
+  }
 }

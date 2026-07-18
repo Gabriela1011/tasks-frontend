@@ -1,11 +1,11 @@
 import { Component, inject, Injector, OnInit, signal } from '@angular/core';
 import { TaskService } from '../services/task.service';
-import { Task } from '../model/task.model';
+import { Task, UpdateTaskDTO } from '../model/task.model';
 import { DatePipe } from '@angular/common';
 import { StatusTypeService } from '../services/status-type.service';
 import { StatusType } from '../model/status-type.model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { TaskModal, TASK_MODAL_DATA } from '../components/task-modal/task-modal';
+import { TaskModal, TaskModalData, TASK_MODAL_DATA } from '../components/task-modal/task-modal';
 import { ConfirmModal } from '../components/confirm-modal/confirm-modal';
 import { ToastService } from '../services/toast.service';
 
@@ -59,22 +59,49 @@ export class Tasks implements OnInit {
   }
 
   openModalForAdd() {
-    const modalInjector = Injector.create({
-      parent: this.injector,
-      providers: [
-        { provide: TASK_MODAL_DATA, useValue: { isEditMode: false, statusTypes: this.statusTypes() } },
-      ],
-    });
-
-    const modalRef = this.modalService.open(TaskModal, { centered: true, size: 'lg', injector: modalInjector });
+    const modalRef = this.openTaskModal({ isEditMode: false, statusTypes: this.statusTypes() });
 
     modalRef.result.then((formData) => {
       if (formData) {
-        this.taskService.createTask(formData).subscribe(() => {
+        this.taskService.createTask(formData).subscribe(() => this.loadTasks());
+      }
+    }).catch(() => {/* user dismissed the modal without saving */});
+  }
+
+  openModalForEdit(task: Task) {
+    const modalRef = this.openTaskModal({ isEditMode: true, taskData: task, statusTypes: this.statusTypes() });
+
+    modalRef.result.then((formData) => {
+      if (!formData) {
+        return;
+      }
+
+      const payload: UpdateTaskDTO = {
+        taskName: formData.taskName,
+        content: formData.content,
+        dueDate: formData.dueDate,
+      };
+
+      this.taskService.updateTask(task.taskId, payload).subscribe({
+        next: () => {
+          this.toastService.show('Task updated successfully');
           this.loadTasks();
-        });
-      }//TODO: muta in task-modal.ts
-    }).catch(() => {/*user dismissed the modal without saving*/});
+        },
+        error: (err) => {
+          console.error('Error updating task', err);
+          this.toastService.show('Failed to update task', 'danger');
+        },
+      });
+    }).catch(() => {/* user dismissed the modal without saving */});
+  }
+
+  private openTaskModal(data: TaskModalData) {
+    const modalInjector = Injector.create({
+      parent: this.injector,
+      providers: [{ provide: TASK_MODAL_DATA, useValue: data }],
+    });
+
+    return this.modalService.open(TaskModal, { centered: true, size: 'lg', injector: modalInjector });
   }
 
   deleteTask(task: Task) {
