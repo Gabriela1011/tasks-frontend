@@ -9,6 +9,7 @@
       <th>Due Date</th>
       <th>Subject</th>
       <th>Status</th>
+      <th>Assigned User</th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -19,6 +20,7 @@
         <td>{{ task.dueDate | date:'dd-MM-yyyy' }}</td>
         <td>{{ task.taskName }}</td>
         <td>{{ task.statusName }}</td>
+        <td>{{ task.username ?? 'Unassigned' }}</td>
         <td>
           <button class="btn btn-outline-danger btn-sm me-2" (click)="deleteTask(task)">Delete</button>
           <button class="btn btn-outline-secondary btn-sm" (click)="openModalForEdit(task)">Edit</button>
