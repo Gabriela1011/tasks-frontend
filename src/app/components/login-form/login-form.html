@@ -1,20 +1,30 @@
 <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-    
+
     @if (errorMessage()) {
         <div class="alert alert-danger p-2 mb-3 rounded-2 text-center" role="alert">
             {{ errorMessage() }}
         </div>
     }
-    
+
     <div class="mb-3">
-        <label class="form-label fw-semibold">Email</label>
-        <input type="email" class="form-control" formControlName="email" placeholder="name@example.com">
+        <label class="form-label fw-semibold">Email *</label>
+        <input
+            type="email"
+            class="form-control"
+            formControlName="email"
+            placeholder="name@example.com">
+        <app-field-error [control]="loginForm.get('email')" label="Email" />
     </div>
-          
+
     <div class="mb-4">
-        <label class="form-label fw-semibold">Password</label>
-        <input type="password" class="form-control" formControlName="password" placeholder="enter your password">
+        <label class="form-label fw-semibold">Password *</label>
+        <input
+            type="password"
+            class="form-control"
+            formControlName="password"
+            placeholder="enter your password">
+        <app-field-error [control]="loginForm.get('password')" label="Password" />
     </div>
-          
+
     <button type="submit" class="btn btn-dark w-100 mb-3">Login</button>
 </form>

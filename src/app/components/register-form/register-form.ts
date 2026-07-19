@@ -2,10 +2,12 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { FieldError } from '../field-error/field-error';
+import { InvalidControl } from '../../directives/invalid-control';
 
 @Component({
   selector: 'app-register-form',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, FieldError, InvalidControl],
   templateUrl: './register-form.html',
   styleUrl: './register-form.css',
 })
