@@ -10,7 +10,7 @@ export const routes: Routes = [
     {path: 'home', component: Homepage, canActivate: [LoggedInGuardService]},
     {path: 'search', component: Search, canActivate: [LoggedInGuardService]},
     {path: 'myTasks', component: Tasks, canActivate: [LoggedInGuardService]},
-    //{path: '', redirectTo: '/home', pathMatch: 'full', canActivate: [LoggedInGuardService]},
+    {path: '', redirectTo: '/home', pathMatch: 'full'},
     {path: 'login', component: Auth, canActivate: [NotLoggedInGuardService]},
     // {path: '**', component: NotFoundComponent}
 ];
