@@ -1,1 +1,129 @@
-<p>search works!</p>
+<div class="mb-4">
+  <p class="fw-bold fs-4 mb-1">Search Tasks</p>
+  <p class="text-muted mb-0">Find tasks by subject, assigned user, due date or status.</p>
+</div>
+
+<form [formGroup]="searchForm" class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+
+  <!-- Search bar -->
+  <div class="input-group input-group-lg mb-4">
+    <span class="input-group-text bg-white border-end-0">
+      <i class="bi bi-search text-muted"></i>
+    </span>
+    <input
+      type="text"
+      class="form-control border-start-0"
+      formControlName="taskName"
+      placeholder="Search by task name...">
+    @if (searchForm.get('taskName')?.value) {
+      <button type="button" class="btn btn-outline-secondary border-start-0" (click)="clearTaskName()" aria-label="Clear task name">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    }
+  </div>
+
+  <!-- Status pills -->
+  <div class="mb-4">
+    <label class="form-label fw-semibold small text-uppercase text-muted">Status</label>
+    <div class="d-flex flex-wrap gap-2">
+      <button
+        type="button"
+        class="btn btn-sm rounded-pill px-3"
+        [class.btn-dark]="!searchForm.get('statusTypeId')?.value"
+        [class.btn-outline-secondary]="searchForm.get('statusTypeId')?.value"
+        (click)="selectStatus(null)">
+        All
+      </button>
+
+      @for (status of statusTypes(); track status.statusTypeId) {
+        <button
+          type="button"
+          class="btn btn-sm rounded-pill px-3"
+          [class.btn-dark]="searchForm.get('statusTypeId')?.value === status.statusTypeId"
+          [class.btn-outline-secondary]="searchForm.get('statusTypeId')?.value !== status.statusTypeId"
+          (click)="selectStatus(status.statusTypeId)">
+          {{ status.statusName }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Assigned user + Due date -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-6">
+      <label class="form-label fw-semibold small text-uppercase text-muted">Assigned User</label>
+      <select class="form-select" formControlName="userId">
+        <option [ngValue]="null">Any user</option>
+        @for (user of users(); track user.userId) {
+          <option [ngValue]="user.userId">{{ user.username }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label fw-semibold small text-uppercase text-muted">Due Date</label>
+      <div class="input-group">
+        <input
+          class="form-control"
+          placeholder="dd-mm-yyyy"
+          formControlName="dueDate"
+          ngbDatepicker
+          #dp="ngbDatepicker"
+          (click)="dp.toggle()"
+          readonly>
+        <button type="button" class="btn btn-outline-secondary" (click)="dp.toggle()" aria-label="Open calendar">
+          <i class="bi bi-calendar3"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active filter chips -->
+  @if (hasActiveFilters()) {
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pt-3 border-top">
+      <span class="small text-muted me-1">Active filters:</span>
+
+      @if (searchForm.get('taskName')?.value) {
+        <span class="badge rounded-pill text-bg-dark d-inline-flex align-items-center gap-2 py-2 px-3">
+          "{{ searchForm.get('taskName')?.value }}"
+          <button type="button" class="btn-close btn-close-white" style="font-size: 0.6rem;" (click)="clearTaskName()" aria-label="Remove"></button>
+        </span>
+      }
+
+      @if (searchForm.get('statusTypeId')?.value) {
+        <span class="badge rounded-pill text-bg-dark d-inline-flex align-items-center gap-2 py-2 px-3">
+          {{ getStatusName(searchForm.get('statusTypeId')?.value) }}
+          <button type="button" class="btn-close btn-close-white" style="font-size: 0.6rem;" (click)="selectStatus(null)" aria-label="Remove"></button>
+        </span>
+      }
+
+      @if (searchForm.get('userId')?.value) {
+        <span class="badge rounded-pill text-bg-dark d-inline-flex align-items-center gap-2 py-2 px-3">
+          {{ getUserName(searchForm.get('userId')?.value) }}
+          <button type="button" class="btn-close btn-close-white" style="font-size: 0.6rem;" (click)="clearUser()" aria-label="Remove"></button>
+        </span>
+      }
+
+      @if (searchForm.get('dueDate')?.value) {
+        <span class="badge rounded-pill text-bg-dark d-inline-flex align-items-center gap-2 py-2 px-3">
+          {{ formatDueDate(searchForm.get('dueDate')?.value) }}
+          <button type="button" class="btn-close btn-close-white" style="font-size: 0.6rem;" (click)="clearDueDate()" aria-label="Remove"></button>
+        </span>
+      }
+
+      <button type="button" class="btn btn-link btn-sm text-danger text-decoration-none ms-auto" (click)="clearAllFilters()">
+        Clear all
+      </button>
+    </div>
+  }
+
+  <div class="d-flex justify-content-end">
+    <button type="submit" class="btn btn-dark px-4">Search</button>
+  </div>
+</form>
+
+<!-- Results placeholder -->
+<div class="text-center text-muted py-5">
+  <i class="bi bi-search mb-3 opacity-50 d-block" style="font-size: 3rem;"></i>
+  <p class="mb-0">Use the filters above to find tasks.</p>
+</div>

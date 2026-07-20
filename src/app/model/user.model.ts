@@ -15,3 +15,8 @@ export interface LoginCredentialsDTO {
   email: string;
   password: string;
 }
+
+export interface UserSummaryDTO {
+  userId: number;
+  username: string;
+}
