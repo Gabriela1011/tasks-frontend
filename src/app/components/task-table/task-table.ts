@@ -26,4 +26,8 @@ export class TaskTable {
   deleteTask(task: Task): void {
     this.taskActions.confirmAndDelete(task, () => this.refresh.emit());
   }
+
+  changeStatus(payload: { task: Task; statusTypeId: string }): void {
+    this.taskActions.changeStatus(payload.task, payload.statusTypeId, () => this.refresh.emit());
+  }
 }

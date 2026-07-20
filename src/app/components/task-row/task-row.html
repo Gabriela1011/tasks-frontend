@@ -1,6 +1,14 @@
 <td>{{ task().dueDate ? (task().dueDate | date:'dd-MM-yyyy') : '—' }}</td>
 <td>{{ task().taskName }}</td>
-<td><span class="badge rounded-pill text-bg-secondary">{{ task().statusName }}</span></td>
+<td>
+  <select class="form-select form-select-sm w-auto" (change)="onStatusChange($event)">
+    @for (status of statusTypes(); track status.statusTypeId) {
+      <option [value]="status.statusTypeId" [selected]="status.statusTypeId === task().statusTypeId">
+        {{ status.statusName }}
+      </option>
+    }
+  </select>
+</td>
 <td>{{ task().username ?? 'Unassigned' }}</td>
 @if (showActions()) {
   <td class="text-nowrap">

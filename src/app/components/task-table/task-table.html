@@ -13,8 +13,9 @@
     </thead>
     <tbody>
       @for (task of tasks(); track task.taskId) {
-        <tr app-task-row [task]="task" [showActions]="showActions()"
-            (edit)="openModalForEdit($event)" (delete)="deleteTask($event)"></tr>
+        <tr app-task-row [task]="task" [statusTypes]="statusTypes()" [showActions]="showActions()"
+            (edit)="openModalForEdit($event)" (delete)="deleteTask($event)"
+            (statusChange)="changeStatus($event)"></tr>
       }
     </tbody>
   </table>

@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Task, CreateTaskDTO, UpdateTaskDTO, TaskSearchParams } from '../model/task.model';
+import { Task, CreateTaskDTO, UpdateTaskDTO, UpdateTaskStatusDTO, TaskSearchParams } from '../model/task.model';
 
 @Injectable({
   providedIn: 'root',
@@ -19,6 +19,10 @@ export class TaskService {
 
   updateTask(taskId: number, taskPayload: UpdateTaskDTO) {
     return this.http.patch<Task>(`${this.apiUrl}/${taskId}`, taskPayload);
+  }
+
+  updateTaskStatus(taskId: number, statusPayload: UpdateTaskStatusDTO) {
+    return this.http.patch<Task>(`${this.apiUrl}/${taskId}/status`, statusPayload);
   }
 
   deleteTask(taskId: number) {

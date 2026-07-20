@@ -62,6 +62,19 @@ export class TaskActionsService {
     }).catch(() => {/* user dismissed the modal without saving */});
   }
 
+  changeStatus(task: Task, statusTypeId: string, onDone: () => void): void {
+    this.taskService.updateTaskStatus(task.taskId, { statusTypeId }).subscribe({
+      next: () => {
+        this.toastService.show('Task status updated');
+        onDone();
+      },
+      error: (err) => {
+        console.error('Error updating task status', err);
+        this.toastService.show('Failed to update status', 'danger');
+      },
+    });
+  }
+
   confirmAndDelete(task: Task, onDone: () => void): void {
     const modalRef = this.modalService.open(ConfirmModal, { centered: true });
     modalRef.componentInstance.title = 'Delete task';
