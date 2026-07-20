@@ -31,3 +31,11 @@ export interface UpdateTaskDTO {
 export interface UpdateTaskStatusDTO {
   statusTypeId: string;
 }
+
+export interface TaskSearchParams {
+  taskName?: string;
+  userIds?: number[];
+  statuses?: string[];
+  dueDateFrom?: string;
+  dueDateTo?: string;
+}

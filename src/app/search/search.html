@@ -3,7 +3,7 @@
   <p class="text-muted mb-0">Find tasks by subject, assigned user, due date or status.</p>
 </div>
 
-<form [formGroup]="searchForm" class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+<form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="card border-0 shadow-sm rounded-4 p-4 mb-4">
 
   <!-- Search bar -->
   <div class="input-group input-group-lg mb-4">
@@ -22,16 +22,16 @@
     }
   </div>
 
-  <!-- Status pills -->
+  <!-- Status pills (multi-select) -->
   <div class="mb-4">
     <label class="form-label fw-semibold small text-uppercase text-muted">Status</label>
     <div class="d-flex flex-wrap gap-2">
       <button
         type="button"
         class="btn btn-sm rounded-pill px-3"
-        [class.btn-dark]="!searchForm.get('statusTypeId')?.value"
-        [class.btn-outline-secondary]="searchForm.get('statusTypeId')?.value"
-        (click)="selectStatus(null)">
+        [class.btn-dark]="selectedStatuses().size === 0"
+        [class.btn-outline-secondary]="selectedStatuses().size > 0"
+        (click)="clearStatuses()">
         All
       </button>
 
@@ -39,39 +39,74 @@
         <button
           type="button"
           class="btn btn-sm rounded-pill px-3"
-          [class.btn-dark]="searchForm.get('statusTypeId')?.value === status.statusTypeId"
-          [class.btn-outline-secondary]="searchForm.get('statusTypeId')?.value !== status.statusTypeId"
-          (click)="selectStatus(status.statusTypeId)">
+          [class.btn-dark]="selectedStatuses().has(status.statusTypeId)"
+          [class.btn-outline-secondary]="!selectedStatuses().has(status.statusTypeId)"
+          (click)="toggleStatus(status.statusTypeId)">
           {{ status.statusName }}
         </button>
       }
     </div>
   </div>
 
-  <!-- Assigned user + Due date -->
+  <!-- Assigned users (multi-select dropdown) -->
+  <div class="mb-4">
+    <label class="form-label fw-semibold small text-uppercase text-muted">Assigned User</label>
+    <div ngbDropdown [autoClose]="'outside'" class="d-block">
+      <button type="button" class="btn btn-outline-secondary w-100 text-start d-flex justify-content-between align-items-center" ngbDropdownToggle>
+        <span>{{ selectedUserIds().size === 0 ? 'Any user' : selectedUserIds().size + ' selected' }}</span>
+      </button>
+      <div ngbDropdownMenu class="w-100 p-2">
+        @for (user of users(); track user.userId) {
+          <div class="px-1 py-1">
+            <div class="form-check mb-0">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                [id]="'dd-user-' + user.userId"
+                [checked]="selectedUserIds().has(user.userId)"
+                (change)="toggleUser(user.userId)">
+              <label class="form-check-label w-100" [for]="'dd-user-' + user.userId">
+                {{ user.username }}
+              </label>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Due date range -->
   <div class="row g-3 mb-4">
     <div class="col-md-6">
-      <label class="form-label fw-semibold small text-uppercase text-muted">Assigned User</label>
-      <select class="form-select" formControlName="userId">
-        <option [ngValue]="null">Any user</option>
-        @for (user of users(); track user.userId) {
-          <option [ngValue]="user.userId">{{ user.username }}</option>
-        }
-      </select>
-    </div>
-
-    <div class="col-md-6">
-      <label class="form-label fw-semibold small text-uppercase text-muted">Due Date</label>
+      <label class="form-label fw-semibold small text-uppercase text-muted">Due Date From</label>
       <div class="input-group">
         <input
           class="form-control"
           placeholder="dd-mm-yyyy"
-          formControlName="dueDate"
+          formControlName="dueDateFrom"
           ngbDatepicker
-          #dp="ngbDatepicker"
-          (click)="dp.toggle()"
+          #dpFrom="ngbDatepicker"
+          (click)="dpFrom.toggle()"
           readonly>
-        <button type="button" class="btn btn-outline-secondary" (click)="dp.toggle()" aria-label="Open calendar">
+        <button type="button" class="btn btn-outline-secondary" (click)="dpFrom.toggle()" aria-label="Open calendar">
+          <i class="bi bi-calendar3"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label fw-semibold small text-uppercase text-muted">Due Date To</label>
+      <div class="input-group">
+        <input
+          class="form-control"
+          placeholder="dd-mm-yyyy"
+          formControlName="dueDateTo"
+          ngbDatepicker
+          #dpTo="ngbDatepicker"
+          [minDate]="searchForm.get('dueDateFrom')?.value"
+          (click)="dpTo.toggle()"
+          readonly>
+        <button type="button" class="btn btn-outline-secondary" (click)="dpTo.toggle()" aria-label="Open calendar">
           <i class="bi bi-calendar3"></i>
         </button>
       </div>
@@ -90,24 +125,30 @@
         </span>
       }
 
-      @if (searchForm.get('statusTypeId')?.value) {
+      @for (statusId of selectedStatusesArray; track statusId) {
         <span class="badge rounded-pill text-bg-dark d-inline-flex align-items-center gap-2 py-2 px-3">
-          {{ getStatusName(searchForm.get('statusTypeId')?.value) }}
-          <button type="button" class="btn-close btn-close-white" style="font-size: 0.6rem;" (click)="selectStatus(null)" aria-label="Remove"></button>
+          {{ getStatusName(statusId) }}
+          <button type="button" class="btn-close btn-close-white" style="font-size: 0.6rem;" (click)="removeStatus(statusId)" aria-label="Remove"></button>
         </span>
       }
 
-      @if (searchForm.get('userId')?.value) {
+      @for (userId of selectedUserIdsArray; track userId) {
         <span class="badge rounded-pill text-bg-dark d-inline-flex align-items-center gap-2 py-2 px-3">
-          {{ getUserName(searchForm.get('userId')?.value) }}
-          <button type="button" class="btn-close btn-close-white" style="font-size: 0.6rem;" (click)="clearUser()" aria-label="Remove"></button>
+          {{ getUserName(userId) }}
+          <button type="button" class="btn-close btn-close-white" style="font-size: 0.6rem;" (click)="removeUser(userId)" aria-label="Remove"></button>
         </span>
       }
 
-      @if (searchForm.get('dueDate')?.value) {
+      @if (searchForm.get('dueDateFrom')?.value || searchForm.get('dueDateTo')?.value) {
         <span class="badge rounded-pill text-bg-dark d-inline-flex align-items-center gap-2 py-2 px-3">
-          {{ formatDueDate(searchForm.get('dueDate')?.value) }}
-          <button type="button" class="btn-close btn-close-white" style="font-size: 0.6rem;" (click)="clearDueDate()" aria-label="Remove"></button>
+          @if (searchForm.get('dueDateFrom')?.value && searchForm.get('dueDateTo')?.value) {
+            {{ formatDate(searchForm.get('dueDateFrom')?.value) }} → {{ formatDate(searchForm.get('dueDateTo')?.value) }}
+          } @else if (searchForm.get('dueDateFrom')?.value) {
+            {{ formatDate(searchForm.get('dueDateFrom')?.value) }}
+          } @else {
+            {{ formatDate(searchForm.get('dueDateTo')?.value) }}
+          }
+          <button type="button" class="btn-close btn-close-white" style="font-size: 0.6rem;" (click)="clearDateRange()" aria-label="Remove"></button>
         </span>
       }
 
@@ -118,12 +159,43 @@
   }
 
   <div class="d-flex justify-content-end">
-    <button type="submit" class="btn btn-dark px-4">Search</button>
+    <button type="submit" class="btn btn-dark px-4" [disabled]="!hasActiveFilters()">Search</button>
   </div>
 </form>
 
-<!-- Results placeholder -->
-<div class="text-center text-muted py-5">
-  <i class="bi bi-search mb-3 opacity-50 d-block" style="font-size: 3rem;"></i>
-  <p class="mb-0">Use the filters above to find tasks.</p>
-</div>
+<!-- Results -->
+@if (!searched()) {
+  <div class="text-center text-muted py-5">
+    <i class="bi bi-search mb-3 opacity-50 d-block" style="font-size: 3rem;"></i>
+    <p class="mb-0">Use the filters above to find tasks.</p>
+  </div>
+} @else if (searchResults().length === 0) {
+  <div class="text-center text-muted py-5">
+    <i class="bi bi-inbox mb-3 opacity-50 d-block" style="font-size: 3rem;"></i>
+    <p class="mb-0">No tasks found for the selected filters.</p>
+  </div>
+} @else {
+  <p class="text-muted small mb-2">{{ searchResults().length }} result(s) found</p>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Task Name</th>
+          <th>Status</th>
+          <th>Assigned User</th>
+          <th>Due Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (task of searchResults(); track task.taskId) {
+          <tr>
+            <td>{{ task.taskName }}</td>
+            <td><span class="badge text-bg-secondary">{{ task.statusName }}</span></td>
+            <td>{{ task.username ?? '—' }}</td>
+            <td>{{ task.dueDate ?? '—' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
