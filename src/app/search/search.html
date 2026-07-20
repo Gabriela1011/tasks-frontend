@@ -176,26 +176,5 @@
   </div>
 } @else {
   <p class="text-muted small mb-2">{{ searchResults().length }} result(s) found</p>
-  <div class="table-responsive">
-    <table class="table table-hover align-middle">
-      <thead class="table-light">
-        <tr>
-          <th>Task Name</th>
-          <th>Status</th>
-          <th>Assigned User</th>
-          <th>Due Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (task of searchResults(); track task.taskId) {
-          <tr>
-            <td>{{ task.taskName }}</td>
-            <td><span class="badge text-bg-secondary">{{ task.statusName }}</span></td>
-            <td>{{ task.username ?? '—' }}</td>
-            <td>{{ task.dueDate ?? '—' }}</td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+  <app-task-table [tasks]="searchResults()" [statusTypes]="statusTypes()" (refresh)="onSearch()"/>
 }

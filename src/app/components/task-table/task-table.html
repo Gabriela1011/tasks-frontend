@@ -1,0 +1,21 @@
+<div class="table-responsive">
+  <table class="table table-striped table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Due Date</th>
+        <th>Subject</th>
+        <th>Status</th>
+        <th>Assigned User</th>
+        @if (showActions()) {
+          <th>Actions</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (task of tasks(); track task.taskId) {
+        <tr app-task-row [task]="task" [showActions]="showActions()"
+            (edit)="openModalForEdit($event)" (delete)="deleteTask($event)"></tr>
+      }
+    </tbody>
+  </table>
+</div>

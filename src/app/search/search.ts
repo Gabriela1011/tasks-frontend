@@ -7,10 +7,11 @@ import { TaskService } from '../services/task.service';
 import { StatusType } from '../model/status-type.model';
 import { UserSummaryDTO } from '../model/user.model';
 import { Task } from '../model/task.model';
+import { TaskTable } from '../components/task-table/task-table';
 
 @Component({
   selector: 'app-search',
-  imports: [ReactiveFormsModule, NgbInputDatepicker, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu],
+  imports: [ReactiveFormsModule, NgbInputDatepicker, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, TaskTable],
   templateUrl: './search.html',
   styleUrl: './search.css',
 })
@@ -125,7 +126,6 @@ export class Search implements OnInit {
       dueDateTo: dueDateTo ? this.formatDateForApi(dueDateTo) : undefined,
     }).subscribe({
       next: (res) => {
-        console.log('Search results:', res);
         this.searchResults.set(res);
         this.searched.set(true);
       },

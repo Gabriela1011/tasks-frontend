@@ -1,0 +1,10 @@
+<td>{{ task().dueDate ? (task().dueDate | date:'dd-MM-yyyy') : '—' }}</td>
+<td>{{ task().taskName }}</td>
+<td><span class="badge rounded-pill text-bg-secondary">{{ task().statusName }}</span></td>
+<td>{{ task().username ?? 'Unassigned' }}</td>
+@if (showActions()) {
+  <td class="text-nowrap">
+    <button type="button" class="btn btn-outline-danger btn-sm me-2" (click)="delete.emit(task())">Delete</button>
+    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="edit.emit(task())">Edit</button>
+  </td>
+}
