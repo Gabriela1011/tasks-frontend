@@ -1,4 +1,6 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { debounceTime } from 'rxjs';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbInputDatepicker, NgbDateStruct, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu } from '@ng-bootstrap/ng-bootstrap';
 import { StatusTypeService } from '../services/status-type.service';
@@ -20,6 +22,7 @@ export class Search implements OnInit {
   private statusTypeService = inject(StatusTypeService);
   private userService = inject(UserService);
   private taskService = inject(TaskService);
+  private destroyRef = inject(DestroyRef);
 
   statusTypes = signal<StatusType[]>([]);
   users = signal<UserSummaryDTO[]>([]);
@@ -27,6 +30,7 @@ export class Search implements OnInit {
   selectedUserIds = signal<Set<number>>(new Set());
   searchResults = signal<Task[]>([]);
   searched = signal<boolean>(false);
+  activeTaskName = signal<string>('');
 
   searchForm: FormGroup = this.fb.group({
     taskName: [''],
@@ -44,6 +48,11 @@ export class Search implements OnInit {
       next: (res) => this.users.set(res),
       error: (err) => console.error('Error loading users', err),
     });
+
+    this.searchForm.get('taskName')!.valueChanges.pipe(
+      debounceTime(400),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(value => this.activeTaskName.set(value || ''));
   }
 
   toggleStatus(statusTypeId: string): void {
@@ -84,6 +93,7 @@ export class Search implements OnInit {
 
   clearTaskName(): void {
     this.searchForm.patchValue({ taskName: '' });
+    this.activeTaskName.set('');
   }
 
   clearDateRange(): void {
@@ -94,6 +104,7 @@ export class Search implements OnInit {
     this.searchForm.reset({ taskName: '', dueDateFrom: null, dueDateTo: null });
     this.selectedStatuses.set(new Set());
     this.selectedUserIds.set(new Set());
+    this.activeTaskName.set('');
   }
 
   hasActiveFilters(): boolean {
