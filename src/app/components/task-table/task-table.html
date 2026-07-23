@@ -14,6 +14,7 @@
     <tbody>
       @for (task of tasks(); track task.taskId) {
         <tr app-task-row [task]="task" [statusTypes]="statusTypes()" [showActions]="showActions()"
+            [isOverdue]="overdueIds().has(task.taskId)"
             (edit)="openModalForEdit($event)" (delete)="deleteTask($event)"
             (statusChange)="changeStatus($event)"></tr>
       }

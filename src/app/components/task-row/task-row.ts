@@ -12,6 +12,7 @@ export class TaskRow {
   task = input.required<Task>();
   statusTypes = input.required<StatusType[]>();
   showActions = input(false);
+  isOverdue = input(false);
   edit = output<Task>();
   delete = output<Task>();
   statusChange = output<{ task: Task; statusTypeId: string }>();

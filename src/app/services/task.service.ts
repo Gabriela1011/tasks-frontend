@@ -29,6 +29,10 @@ export class TaskService {
     return this.http.delete<void>(`${this.apiUrl}/${taskId}`);
   }
 
+  getOverdueTaskIds() {
+    return this.http.get<number[]>(`${this.apiUrl}/overdue`);
+  }
+
   searchTasks(params: TaskSearchParams) {
     let httpParams = new HttpParams();
 

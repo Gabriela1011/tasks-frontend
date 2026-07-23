@@ -1,5 +1,15 @@
 <td>{{ task().dueDate ? (task().dueDate | date:'dd-MM-yyyy') : '—' }}</td>
-<td>{{ task().taskName }}</td>
+<td>
+  <span class="d-inline-flex align-items-center gap-2">
+    {{ task().taskName }}
+    @if (isOverdue()) {
+      <span class="badge rounded-pill text-bg-danger d-inline-flex align-items-center gap-1">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        Overdue
+      </span>
+    }
+  </span>
+</td>
 <td>
   <select class="form-select form-select-sm w-auto" (change)="onStatusChange($event)">
     @for (status of statusTypes(); track status.statusTypeId) {
