@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { FieldError } from '../field-error/field-error';
 import { InvalidControl } from '../../directives/invalid-control';
 import LocalStorageUtils from '../../utils/localStorageUtils';
-import { RegisterUserDTO } from '../../model/user.model';
+import { AuthResponseDTO, RegisterUserDTO } from '../../model/user.model';
 
 @Component({
   selector: 'app-register-form',
@@ -43,16 +43,12 @@ export class RegisterForm {
     };
 
     this.authService.register(encodedRegisterData).subscribe({
-      next: (response) => {
-        console.log('Registration successful!');
-
-        LocalStorageUtils.setItem(LocalStorageUtils.tokenKey, response);
-
+      next: (response: AuthResponseDTO) => {
+        LocalStorageUtils.setItem(LocalStorageUtils.tokenKey, response.token);
         this.router.navigate(['/myTasks']);
       },
       error: (err) => {
-        console.error('Registration failed:', err);
-        const backendErrorMessage = err.error?.message || err.error || 'An error occurred during registration. Try again later.';
+        const backendErrorMessage = err.error?.message || 'An error occurred during registration. Try again later.';
         this.errorMessage.set(backendErrorMessage);
       }
     });

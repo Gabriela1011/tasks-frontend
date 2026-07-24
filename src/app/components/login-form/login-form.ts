@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { FieldError } from '../field-error/field-error';
 import { InvalidControl } from '../../directives/invalid-control';
 import LocalStorageUtils from '../../utils/localStorageUtils';
-import { LoginCredentialsDTO } from '../../model/user.model';
+import { AuthResponseDTO, LoginCredentialsDTO } from '../../model/user.model';
 
 @Component({
   selector: 'app-login-form',
@@ -39,16 +39,12 @@ export class LoginForm {
     };
 
     this.authService.login(encodedLoginData).subscribe({
-      next: (response: string) => {
-        console.log('Login successful');
-
-        LocalStorageUtils.setItem(LocalStorageUtils.tokenKey, response);
-
+      next: (response: AuthResponseDTO) => {
+        LocalStorageUtils.setItem(LocalStorageUtils.tokenKey, response.token);
         this.router.navigate(['/home']);
       },
       error: (err) => {
-        console.error('Login failed:', err);
-        const backendErrorMessage = err.error?.message || err.error || 'An error occurred during login.';
+        const backendErrorMessage = err.error?.message || 'An error occurred during login.';
         this.errorMessage.set(backendErrorMessage);
       }
     });
