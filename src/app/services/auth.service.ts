@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { LoginCredentialsDTO, RegisterUserDTO, UserDetailsDTO } from '../model/user.model';
+import { LoginCredentialsDTO, RegisterUserDTO} from '../model/user.model';
+import LocalStorageUtils from '../utils/localStorageUtils';
 
 @Injectable({
   providedIn: 'root',
@@ -9,14 +10,20 @@ export class AuthService {
   private http = inject(HttpClient);
 
   login(authPayload: LoginCredentialsDTO) {
-    return this.http.post<UserDetailsDTO>('http://localhost:8080/auth/login', authPayload);
+    return this.http.post<string>('http://localhost:8080/auth/login', authPayload,
+      {
+        responseType: 'text' as 'json'
+      });
   }
 
   register(registerPayload: RegisterUserDTO) {
-    return this.http.post<UserDetailsDTO>('http://localhost:8080/auth/register', registerPayload);
+    return this.http.post<string>('http://localhost:8080/auth/register', registerPayload,
+      {
+        responseType: 'text' as 'json'
+      });
   }
 
   logout() {
-    localStorage.removeItem('loggedUser');
+    LocalStorageUtils.deleteItem(LocalStorageUtils.tokenKey);
   }
 }

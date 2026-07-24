@@ -4,6 +4,8 @@ import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { FieldError } from '../field-error/field-error';
 import { InvalidControl } from '../../directives/invalid-control';
+import LocalStorageUtils from '../../utils/localStorageUtils';
+import { LoginCredentialsDTO } from '../../model/user.model';
 
 @Component({
   selector: 'app-login-form',
@@ -17,7 +19,7 @@ export class LoginForm {
   private router = inject(Router);
 
   errorMessage = signal<string | null>(null);
-  
+
   loginForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]]
@@ -31,15 +33,18 @@ export class LoginForm {
       return;
     }
 
-    const loginData = this.loginForm.value;
+    const encodedLoginData: LoginCredentialsDTO = {
+      email: btoa(this.loginForm.value.email),
+      password: btoa(this.loginForm.value.password)
+    };
 
-    this.authService.login(loginData).subscribe({
-      next: (response) => {
-        console.log('Login successful:', response);
+    this.authService.login(encodedLoginData).subscribe({
+      next: (response: string) => {
+        console.log('Login successful');
 
-        localStorage.setItem('loggedUser', JSON.stringify(response));
+        LocalStorageUtils.setItem(LocalStorageUtils.tokenKey, response);
 
-        this.router.navigate(['/myTasks']);
+        this.router.navigate(['/home']);
       },
       error: (err) => {
         console.error('Login failed:', err);
@@ -48,4 +53,5 @@ export class LoginForm {
       }
     });
   }
+
 }

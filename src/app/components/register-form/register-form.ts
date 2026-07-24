@@ -4,6 +4,8 @@ import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { FieldError } from '../field-error/field-error';
 import { InvalidControl } from '../../directives/invalid-control';
+import LocalStorageUtils from '../../utils/localStorageUtils';
+import { RegisterUserDTO } from '../../model/user.model';
 
 @Component({
   selector: 'app-register-form',
@@ -33,13 +35,18 @@ export class RegisterForm {
       return;
     }
 
-    const registerData = this.registerForm.value;
+    const encodedRegisterData: RegisterUserDTO = {
+      email: btoa(this.registerForm.value.email),
+      password: btoa(this.registerForm.value.password),
+      username: this.registerForm.value.username,
+      birthDate: this.registerForm.value.birthDate
+    };
 
-    this.authService.register(registerData).subscribe({
+    this.authService.register(encodedRegisterData).subscribe({
       next: (response) => {
-        console.log('Registration successful:', response);
+        console.log('Registration successful!');
 
-        localStorage.setItem('loggedUser', JSON.stringify(response));
+        LocalStorageUtils.setItem(LocalStorageUtils.tokenKey, response);
 
         this.router.navigate(['/myTasks']);
       },
